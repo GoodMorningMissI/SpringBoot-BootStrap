@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/plugins/bootstraptable/dist/bootstrap-table.min.css">
+
+
+</head>
+<body>
+
+<div class="container-fluid">
+
+
+    <div style="width: 100%;height: 40px"></div>
+    <!--姓名查询功能-->
+    <label for="searchName" style="font-size: 23px;display: inline-block">姓名:</label>
+    <input type="text" class="form-control" id="searchName" placeholder="姓名"  name="searchName" style="width: 20%;height: 40px;display: inline-block">
+    <button type="button" class="btn btn-primary btn-lg" onclick="search();">姓名查询</button>
+
+
+    <p></p>
+    <!--学号查询功能-->
+    <label for="searchNo" style="font-size: 23px;display: inline-block">学号:</label>
+    <input type="text" class="form-control" id="searchNo" placeholder="学号"  name="searchNo" style="width: 20%;height: 40px;display: inline-block">
+    <button type="button" class="btn btn-primary btn-lg" onclick="searchNumber();">学号查询</button>
+
+
+    <div id="toolbar" ><div style="display: inline-block"><button class="btn btn-default" type="button" name="allDelete" title="批量删除" aria-label="批量删除" onclick="all_Delete()" >批量删除</button></div><div style="display: inline-block"><!--新增学生功能-->
+        <button  type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" onclick="preAdd()">新增学生</button></div></div>
+
+
+
+
+    <table class="table table-hover" style="margin:0 auto" id="studentTb">
+
+
+    </table>
+
+
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">学生信息</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formStudent">
+                    <input hidden="hidden" id="id" name="id" />
+                    <div class="form-group">
+                        <label for="no">学号:</label>
+                        <input type="text" class="form-control" id="no" placeholder="学号" name="no">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">姓名:</label>
+                        <input type="text" class="form-control" id="name" placeholder="姓名" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码:</label>
+                        <input type="password" class="form-control" id="password" placeholder="密码" name="password">
+                    </div>
+                    <div class="form-group">
+                        <label for="sex">性别:</label>
+                        <select class="form-control" id="sex" name="sex">
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="procname">专业名称:</label>
+                        <select class="form-control" id="procname" name="procname">
+<!--                            <option value="计算机科学与技术">计算机科学与技术</option>-->
+<!--                            <option value="金融学">金融学</option>-->
+                        </select>
+<!--                        <input type="text" class="form-control" id="procname" placeholder="procname" name="procname">-->
+                    </div>
+                </form>
+                <!--表单结束 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="saveStudent()">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="/js/bootstrap.js"></script>
+<script src="/plugins/bootstraptable/dist/bootstrap-table.min.js"></script>
+<script src="/plugins/bootstraptable/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+
+
+
+
+<script type="text/javascript">
+    function getDownTableData(){
+        $.ajax({
+            url:'/webapi/student/getdowntabledata',
+        }).done(function (rs){
+             let htmllet="";
+             var arr=[];
+             for(var item in rs){
+                 arr.push(rs[item].procname);
+             }
+             for(var  i=0;i<arr.length;i++){
+                htmllet+='<option value="'+arr[i]+'">'+arr[i]+'</option>'
+             }
+            document.getElementById("procname").innerHTML = htmllet;
+        })
+    }
+    function all_Delete(){
+        if (!confirm("是否确认删除？")){
+            return;
+        }
+        var rows= $("#studentTb").bootstrapTable('getSelections');
+        if (rows.length === 0) {
+            alert("请先选择要删除的记录!");
+            return;
+        } else {
+            var ids = [];// 声明一个数组
+            $(rows).each(function() {// 通过获得别选中的来进行遍历
+                ids.push(this.id);// cid为获得到的整条数据中的一列
+            });
+
+            deleteMs(ids)
+        }
+    }
+
+    function deleteMs(ids){
+        $.ajax({
+            url:'/webapi/student/pi_delete/'+ids,
+            method:"delete"
+        }).done(function (){
+            $('#studentTb').bootstrapTable("destroy");
+            loadTable();
+        })
+    }
+    function search(){
+        $('#studentTb').bootstrapTable("destroy");
+        loadTable();
+    }
+
+    function searchNumber(){
+        $('#studentTb').bootstrapTable("destroy");
+        loadTable();
+    }
+
+    //更新
+    function saveStudent(){
+        var data=$("#formStudent").serialize();
+
+        var id=$("#id").val();
+        if(id<1){
+            //是新增
+            $.ajax({
+                url:"/webapi/student/insert",
+                method:"post",
+                data:data
+            }).done(function (){
+                $('#studentTb').bootstrapTable("destroy");
+                loadTable();
+                $('#myModal').modal('hide')
+            })
+        }else{
+            //是更新
+            $.ajax({
+                url:"/webapi/student/update",
+                method:"put",
+                data:data
+            }).done(function (){
+                $('#studentTb').bootstrapTable("destroy");
+                loadTable();
+                $('#myModal').modal('hide')
+            })
+        }
+
+    }
+
+    function editStudent(id){
+        $.ajax({
+            url:'/webapi/student/get/'+id
+        }).done(function (rs){
+            $("#id").val(rs.id);
+            $("#no").val(rs.no);
+            $("#name").val(rs.name);
+            $("#password").val("");
+            $("#sex").val(rs.sex);
+            $("#procname").val(rs.procname);
+            $("#myModal").modal('show');
+            $('#studentTb').bootstrapTable("destroy");
+            loadTable();
+        })
+    }
+
+    function deleteStudent(id){
+        if (confirm("确定删除？")){
+            $.ajax({
+                url:'/webapi/student/delete/'+id,
+                method:"delete"
+            }).done(function (){
+                $('#studentTb').bootstrapTable("destroy");
+                loadTable();
+            })
+        }
+
+    }
+
+    function loadTable(){
+        $('#studentTb').bootstrapTable({
+            url: '/webapi/student/getbypage',
+            striped:true,//隔行变色
+            pagination:true,//底部显示分页条
+            singleSelect:false,//不禁止多选
+            pageSize:4,//分页每页的数据条
+            pageNumber:1,//首页页码
+            sidePagination: "server",//在服务器端进行分页
+            showColumns:true,
+            showRefresh:true,
+            sortable:true,
+            sortOrder:"asc",
+            toolbar:'#toolbar',
+            queryParams:function (params){
+                var paraObj = {
+                    size: params.limit,
+                    page:params.offset/params.limit,
+                    sort:params.sort,
+                    sortOrder: params.order,
+                    name:$("#searchName").val(),
+                    no:$("#searchNo").val()
+                };
+                return paraObj;
+            },
+            columns: [{
+                title:'全选',
+                checkbox:true,
+                visible:true,
+                width:30
+            }, {
+                field: 'id',
+                title: '序号',
+                align: 'center',
+                width:30
+            }, {
+                field: 'no',
+                title: '学号',
+                align: 'center',
+                width:100
+            }, {
+                field: 'name',
+                title: '姓名',
+                align: 'center',
+                width:100
+            },{
+                field: 'sex',
+                title: '性别',
+                align: 'center',
+                width:100,
+            },{
+                field: 'procname',
+                title: '专业名称',
+                align: 'center',
+                width:100
+
+            },{
+                field: 'id',
+                title: '操作',
+                width: 100,
+                align: 'center',
+                valign: 'middle',
+                formatter:actionFormatter
+            },]
+            ,
+            responseHandler:function (res){
+                return{
+                    "total":res.data.totalElements,
+                    "rows":res.data.content
+                };
+            }
+        });
+
+    }//end of loadTable();
+
+    function actionFormatter(value, row, index) {
+        var id = value;
+        var result = "";
+        result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"editStudent('" + id + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+        result += "<a href='javascript:;' class='btn btn-xs red' onclick=\"deleteStudent('" + id + "')\" title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+        return result;
+
+    }
+
+    function preAdd(){
+        $("#id").val(0);//提示新增
+    }
+
+    $(function (){
+        loadTable();
+        getDownTableData();
+
+    })
+
+    //禁止浏览器后退
+    history.pushState(null,null,document.URL);
+    window.addEventListener('popstate',function () {
+        history.pushState(null, null, document.URL);
+    });
+
+
+
+</script>
+</body>
+
+
+
+
+
+</html>

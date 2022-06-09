@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录页</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/plugins/bootstraptable/dist/bootstrap-table.min.css">
+    <style>
+        b{
+            font-weight: bolder;
+            color: red;
+        }
+
+        html{
+            height: 100%;
+        }
+        div{
+            display: block;
+        }
+        .login-panel{
+            width:858px;
+            height:600px;
+            border-radius:15px 15px 15px 15px;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            background: rgba(255,255,255, .3);
+            box-shadow: 3px 3px 6px 3px rgba(0,0,0, .3);
+            transform: translate(-50%, -50%);
+        }
+        .left-panel-body{
+            float: left;
+            width: 40%;
+            height: 100%;
+            background-color: #ffffff;
+            border-radius:15px 0px 0px 15px;
+            background: url(https://tse1-mm.cn.bing.net/th/id/R-C.d50d8b023ed40a7b02887582f40cdc98?rik=7pp9jevFna%2fhKw&riu=http%3a%2f%2fwww.henglongzs.com%2fwp-content%2fuploads%2f2019%2f05%2f4510c69f8fcfd717247534a83cf587ea.png&ehk=xIQeE8IDsmfzczFVAArbUMdFstRVrnhZTi1HxloYl60%3d&risl=&pid=ImgRaw&r=0);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            overflow: hidden;
+        }
+        .right-panel-body{
+            float: left;
+            width: 60%;
+            height: 100%;
+            border-radius:15px 0px 0px 15px;
+        }
+        .inline-panel{
+            padding: 50px;
+            margin: 0 auto;
+            width: 500px;
+        }
+        .header{
+            font-size: 18px;
+            color: #004098;
+            margin-bottom:20px;
+            margin-top: 50px;
+        }
+        .input-item{
+            width: 100%;
+            margin-bottom: 20px;
+            border: 0;
+            padding: 10px;
+            border-bottom:1px solid rgb(128,125,125) ;
+            font-size: 15px;
+            border-radius: 5px;
+        }
+        .btn-primary{
+            text-align: center;
+            padding: 10px;
+            width: 100%;
+            margin-top: 40px;
+       }
+
+    </style>
+
+
+</head>
+<body style="height: 100%">
+
+<div class="container-fluid" style="height: 100%;background-image:linear-gradient(to right, #fbc2eb, #a6c1ee);background-repeat: no-repeat;background-size: cover">
+
+    <div class="login-panel">
+        <div class="left-panel-body"></div>
+        <div class="right-panel-body">
+            <div class="inline-panel">
+                <div class="header">密码登录</div>
+                <form>
+                    <div class="form-group" >
+                        <input class="input-item" type="text"  id="no" name="no" placeholder="学号/工号" style="background: rgba(255,255,255, .3);">
+                        <input class="input-item" type="password"  id="password" name="username" placeholder="密码" style="background: rgba(255,255,255, .3);">
+                    </div>
+
+                    <div class="radio" style="text-align: center;margin-bottom: 20px">
+                        <label>
+                            <input type="radio" name="optionsRadios" id="student" value="1">
+                            学生
+                        </label>
+                        <label>
+                            <input type="radio" name="optionsRadios" id="administrators" value="2">
+                            管理员
+                        </label>
+                    </div>
+
+
+                    <button type="button" class="btn btn-primary" onclick="login();">登录</button>
+
+
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    function login(){
+        var no=$("#no").val();
+        var password=$("#password").val();
+        var choice=$("input[name='optionsRadios']:checked").val();
+        $.ajax({
+            url:"/webapi/login/user",
+            data:{
+                no:no,
+                password:password,
+                choice:choice
+            }
+
+        }).done(function (rs) {
+            if (rs >= 0) {
+                if (rs==1){
+                    window.location.href="/student/information";
+                }else{
+                    window.location.href = "/admin/adminmain";
+                }
+
+            } else {
+                alert("用户名或密码错误，请核对信息！");
+            }
+        });
+    }
+
+    //禁止浏览器后退
+    history.pushState(null,null,document.URL);
+    window.addEventListener('popstate',function () {
+        history.pushState(null, null, document.URL);
+    });
+
+</script>
+
+</body>
+</html>

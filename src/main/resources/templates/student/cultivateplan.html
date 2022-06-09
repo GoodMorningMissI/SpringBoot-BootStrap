@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>培养方案查询</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/plugins/bootstraptable/dist/bootstrap-table.min.css">
+    <style>
+        html,body{
+            height: 100%;
+            overflow: hidden;
+        }
+
+    </style>
+
+
+
+</head>
+<body>
+    <div class="container" id="bigcontainer" style="height: 100%">
+<!--    <object id="object" data="/pdf/csplan.pdf" aria-labelledby="label" type="application/pdf" width="100%" height="100%"></object>-->
+    </div>
+
+<script src="/js/bootstrap.js"></script>
+<script src="/plugins/bootstraptable/dist/bootstrap-table.min.js"></script>
+<script src="/plugins/bootstraptable/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript">
+    $(function (){
+        loadTable();
+    })
+    function loadTable(){
+        $.ajax({
+            url:"/webapi/student/getcultivateplanname"
+        }).done(function (rs) {
+            if(rs.procname=="计算机科学与技术"){
+                document.getElementById("bigcontainer").innerHTML = '<object id="object" data="/pdf/csplan.pdf" aria-labelledby="label" type="application/pdf" width="100%" height="100%"></object>';
+            }
+            if(rs.procname=="金融学"){
+                document.getElementById("bigcontainer").innerHTML = '<object id="object" data="/pdf/enconmony.pdf" aria-labelledby="label" type="application/pdf" width="100%" height="100%"></object>';
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

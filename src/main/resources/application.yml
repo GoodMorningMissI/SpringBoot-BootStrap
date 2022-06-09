@@ -1,0 +1,27 @@
+server:
+  port: 8082
+  servlet:
+    session:
+      timeout: 40m
+
+spring:
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:mysql://localhost:3306/labtest
+    username: root
+    password: hawkins123
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    check-template-location: true
+    mode: HTML5
+    cache: false
+    encoding: UTF-8
+    suffix: .html
+    servlet:
+      content-type: text/html
+

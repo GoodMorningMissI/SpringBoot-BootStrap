@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学生成绩管理系统</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/plugins/bootstraptable/dist/bootstrap-table.min.css">
+    <style>
+        b{
+            font-weight: bolder;
+            color: red;
+        }
+        html{
+            height: 100%;
+        }
+        div{
+            display: block;
+        }
+        .top{
+            width: 100%;
+            height: 45px;
+            background-color: #222;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .left-tag{
+            position: absolute;
+            top: 46px;
+            bottom: 42px;
+            left: 0;
+            z-index: 2;
+            padding-top: 10px;
+            background-color: #EEEEEE;
+            width: 220px;
+            /*max-width: 220px;*/
+            overflow: auto;
+            overflow-x: hidden;
+            border-right: 1px solid #e5e5e5;
+        }
+        .content{
+            position: absolute;
+            top: 46px;
+            right: 0;
+            left: 221px;
+            bottom: 42px;
+            overflow: hidden;
+            z-index: 1;
+            bottom: 42px;
+        }
+        .dropdown{
+            font-size: 15px;
+            line-height: 40px;
+            float: right;
+            border:hidden;
+            background-color: #222222;
+            padding-right: 20px;
+            color: #00ccff;
+        }
+        .tab-pane{
+            height: 100%;
+        }
+        .footer{
+            bottom: 0px;
+            position: fixed;
+            width: 100%;
+            background-color: #222222;
+            height: 41px;
+        }
+
+    </style>
+</head>
+
+<body style="height: 100%">
+<div class="top">
+    <div style="float: left;color:#ffffff;font-size: 18px;padding-left:20px;line-height: 45px;width: 260px; ">学生成绩管理系统(管理员端)</div>
+    <div class="dropdown">
+        <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="background-color: #222222;border:hidden;">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+            当前账户:<span th:text="${session.get('admname')}"></span>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dLabel">
+            <li><a data-toggle="modal" data-target="#ChangePassWord">修改密码</a></li>
+            <li><a data-toggle="modal" data-target="#ExitModal">退出登录</a></li>
+        </ul>
+    </div>
+</div>
+
+<div class="left-tag">
+    <div class="left-tag-button" style="width: 90%;margin: 0 auto">
+        <button type="button" class="btn btn-default btn-lg btn-block" onclick="studentinformation()">学生信息管理</button>
+        <button type="button" class="btn btn-default btn-lg btn-block" onclick="scoreinformation()">学生成绩管理</button>
+        <button type="button" class="btn btn-default btn-lg btn-block" onclick="cultivateplan()">专业课程管理</button>
+    </div>
+</div>
+
+<div class="content">
+    <div  style="height: 100%">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">我的主页</a></li>
+            <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" >学生信息管理 <span class="glyphicon glyphicon-remove" id="close"></span></a></li>
+            <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">学生成绩管理 <span class="glyphicon glyphicon-remove"></span></a></li>
+            <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">专业课程管理 <span class="glyphicon glyphicon-remove"></span></a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content" style="height: 100%;bottom: 42px;">
+            <div role="tabpanel" class="tab-pane active" id="home"></div>
+            <div role="tabpanel" class="tab-pane" id="profile" ><iframe id="list" src="../student/list" style="margin: 0 auto;height: 98%;width: 98%;border: none;display: block;"></iframe></div>
+            <div role="tabpanel" class="tab-pane" id="messages"><iframe id="score" src="StudentScoreManage" style="margin: 0 auto;height: 98%;width: 98%;border: none;display: block;"></iframe></div>
+            <div role="tabpanel" class="tab-pane" id="settings"><iframe id="course" src="coursemanage" style="margin: 0 auto;height: 98%;width: 98%;border: none;display: block;"></iframe></div>
+        </div>
+
+    </div>
+</div>
+<div class="footer"></div>
+<div class="modal fade" tabindex="-1" role="dialog" id="ChangePassWord">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="stuno">工号:</label>
+                    <span th:text="${session.get('adminno')}" id="stuno"></span>
+                </div>
+                <div class="form-group">
+                    <label for="old_password">原始密码:</label>
+                    <input type="password" class="form-control" id="old_password" placeholder="原始密码" name="password">
+                </div>
+                <div class="form-group">
+                    <label for="new_password">新密码:</label>
+                    <input type="password" class="form-control" id="new_password" placeholder="新密码" name="password">
+                </div>
+                <div class="form-group">
+                    <label for="new_password_confirm">确认密码:</label>
+                    <input type="password" class="form-control" id="new_password_confirm" placeholder="确认密码" name="password">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="changepassword()">确认</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="ExitModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">确认框</h4>
+            </div>
+            <div class="modal-body" >
+                <form action="logout">
+                    <form class="form-group">
+                        <label class="control-label" style="font-size: 22px;text-align: center">确认要退出吗？</label>
+                    </form>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-danger" th:href="@{/logout}" >确认</a>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">取消</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="/js/bootstrap.js"></script>
+<script src="/plugins/bootstraptable/dist/bootstrap-table.min.js"></script>
+<script src="/plugins/bootstraptable/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<script type="text/javascript">
+    // function studentinformation(){
+    //     $('#myTab a[href="#profile"]').tab('show');
+    // }
+    // function scoreinformation(){
+    //     $('#myTab a[href="#messages"]').tab('show');
+    // }
+    // function cultivateplan(){
+    //     $('#myTab a[href="#settings"]').tab('show');
+    // }
+
+    $('#myTabs a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show')
+
+
+
+
+    })
+    $('a[data-toggle="tab"]').on('hide.bs.tab', function (e) {
+        e.target // newly activated tab
+        e.relatedTarget // previous active tab
+        var _body = window.parent;
+        var _iframe1=_body.document.getElementById('list');
+        _iframe1.contentWindow.location.reload(true)
+        var _iframe2=_body.document.getElementById('score');
+        _iframe2.contentWindow.location.reload(true)
+        var _iframe3=_body.document.getElementById('course');
+        _iframe3.contentWindow.location.reload(true)
+    })
+    // $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    //     var ifm1 = $('<iframe src="../student/list" style="margin: 0 auto;height: 98%;width: 98%;border: none;display: block;"></iframe>');
+    //     ifm1.appendTo($("#profile"));
+    //     var ifm2 = $('<iframe src="StudentScoreManage" style="margin: 0 auto;height: 98%;width: 98%;border: none;display: block;"></iframe>');
+    //     ifm2.appendTo($("#messages"));
+    //     var ifm3 = $('<iframe src="" style="margin: 0 auto;height: 98%;width: 98%;border: none;display: block;"></iframe>');
+    //     ifm3.appendTo($("#settings"));
+    // })
+
+    function changepassword(){
+        var old_password=$('#old_password').val();
+        var new_password=$('#new_password').val();
+        var new_password_confirm=$('#new_password_confirm').val();
+        if(new_password===new_password_confirm){
+            $.ajax({
+                url:"/webapi/admin/changepassword",
+                data:{
+                    old_password:old_password,
+                    new_password:new_password,
+                }
+            }).done(function (rs) {
+                if (rs >= 0) {
+                    alert("成功修改！");
+                    $('#ChangePassWord').modal('hide');
+
+                } else {
+                    alert("原始密码错误！");
+                }
+            });
+        }else{
+            alert("新密码不同,请核对信息！");
+        }
+
+    }
+    // $(function () {
+    //     document.getElementById("settings").innerHTML = '<object type="text/html" data="cultivateplan" width="100%" height="100%"></object>';
+    // })
+
+</script>
+</body>
+</html>

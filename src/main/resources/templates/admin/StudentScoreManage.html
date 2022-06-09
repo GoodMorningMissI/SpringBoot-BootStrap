@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学生成绩管理</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/plugins/bootstraptable/dist/bootstrap-table.min.css">
+    <style>
+        html,body{
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+
+
+    <div style="width: 100%;height: 40px"></div>
+    <!--姓名查询功能-->
+    <label for="searchName" style="font-size: 23px;display: inline-block">姓名:</label>
+    <input type="text" class="form-control" id="searchName" placeholder="姓名"  name="searchName" style="width: 20%;height: 40px;display: inline-block">
+    <button type="button" class="btn btn-primary btn-lg" onclick="search();">姓名查询</button>
+
+
+    <p></p>
+    <!--学号查询功能-->
+    <label for="searchNo" style="font-size: 23px;display: inline-block">学号:</label>
+    <input type="text" class="form-control" id="searchNo" placeholder="学号"  name="searchNo" style="width: 20%;height: 40px;display: inline-block">
+    <button type="button" class="btn btn-primary btn-lg" onclick="searchNumber();">学号查询</button>
+    <table class="table table-hover" style="margin:0 auto" id="studentTb">
+
+    </table>
+
+    <div class="modal fade" id="scoreModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="height: 800px;width: 1000px">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">学生成绩管理</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-hover" style="margin:0 auto" id="studentscore">
+
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addscoreModal" onclick="getDownTablecourseData()">新增成绩</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="changescoreModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="height: 800px;width: 1000px">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" >修改学生成绩</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="formStudent">
+                        <input hidden="hidden" id="id" name="id" />
+                        <input hidden="hidden" id="courseno" name="courseno" />
+                        <input hidden="hidden" id="stuno" name="stuno" />
+                        <div class="form-group">
+                            <label for="scoreusual">平时成绩:</label>
+                            <input type="text" class="form-control" id="scoreusual" placeholder="平时成绩" name="scoreusual">
+                        </div>
+                        <div class="form-group">
+                            <label for="scorefinal">期末成绩:</label>
+                            <input type="text" class="form-control" id="scorefinal" placeholder="期末成绩" name="scorefinal">
+                        </div>
+                        <div class="form-group">
+                            <label for="scoremakeup">补考成绩:</label>
+                            <input type="text" class="form-control" id="scoremakeup" placeholder="补考成绩" name="scoremakeup">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="savescore()">保存</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addscoreModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="height: 800px;width: 1000px">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" >新增学生成绩</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="addformStudent">
+                        <input hidden="hidden" id="id1" name="id" />
+                        <input hidden="hidden" id="stuno1" name="stuno" />
+                        <div class="form-group">
+                            <label for="courseno1">课程名称:</label>
+                            <select class="form-control" id="courseno1" name="courseno">
+
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="scoreusual">平时成绩:</label>
+                            <input type="text" class="form-control" id="scoreusual1" placeholder="平时成绩" name="scoreusual">
+                        </div>
+                        <div class="form-group">
+                            <label for="scorefinal">期末成绩:</label>
+                            <input type="text" class="form-control" id="scorefinal1" placeholder="期末成绩" name="scorefinal">
+                        </div>
+                        <div class="form-group">
+                            <label for="scoremakeup">补考成绩:</label>
+                            <input type="text" class="form-control" id="scoremakeup1" placeholder="补考成绩" name="scoremakeup">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="insertscore()">保存</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="/js/bootstrap.js"></script>
+<script src="/plugins/bootstraptable/dist/bootstrap-table.min.js"></script>
+<script src="/plugins/bootstraptable/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+
+<script type="text/javascript">
+    function getDownTablecourseData(){
+        addScorePreAction();
+        var stuno=$("#stuno1").val();
+        $.ajax({
+            url:'/webapi/student/getdowntablecoursedata',
+            data:{
+                stuno:stuno
+            }
+        }).done(function (rs){
+            let htmllet="";
+            var arr_no=[];
+            var arr_name=[];
+            for(var item in rs){
+                arr_no.push(rs[item].courseno);
+                arr_name.push(rs[item].coursename);
+            }
+            for(var  i=0;i<arr_no.length;i++){
+                htmllet+='<option value="'+arr_no[i]+'">'+arr_name[i]+'</option>'
+            }
+            document.getElementById("courseno1").innerHTML = htmllet;
+        })
+    }
+    $(function (){
+        loadTable();
+    })
+    function search(){
+        $('#studentTb').bootstrapTable("destroy");
+        loadTable();
+    }
+    function searchNumber(){
+        $('#studentTb').bootstrapTable("destroy");
+        loadTable();
+    }
+    function loadTable(){
+        $('#studentTb').bootstrapTable({
+            url: '/webapi/student/getbypage',
+            striped:true,//隔行变色
+            pagination:true,//底部显示分页条
+            singleSelect:false,//不禁止多选
+            pageSize:4,//分页每页的数据条
+            pageNumber:1,//首页页码
+            sidePagination: "server",//在服务器端进行分页
+            sortable:true,
+            sortOrder:"asc",
+            toolbar:'#toolbar',
+            queryParams:function (params){
+                var paraObj = {
+                    size: params.limit,
+                    page:params.offset/params.limit,
+                    sort:params.sort,
+                    sortOrder: params.order,
+                    name:$("#searchName").val(),
+                    no:$("#searchNo").val()
+                };
+                return paraObj;
+            },
+            columns: [{
+                field: 'id',
+                title: '序号',
+                align: 'center',
+                width:30
+            }, {
+                field: 'no',
+                title: '学号',
+                align: 'center',
+                width:100
+            }, {
+                field: 'name',
+                title: '姓名',
+                align: 'center',
+                width:100
+            },{
+                field: 'sex',
+                title: '性别',
+                align: 'center',
+                width:100,
+            },{
+                field: 'procname',
+                title: '专业名称',
+                align: 'center',
+                width:100
+
+            },{
+                field: 'no',
+                title: '查看成绩',
+                width: 100,
+                align: 'center',
+                valign: 'middle',
+                formatter:actionFormatter
+            },]
+            ,
+            responseHandler:function (res){
+                return{
+                    "total":res.data.totalElements,
+                    "rows":res.data.content
+                };
+            }
+        });
+    }//end of loadTable();
+    function actionFormatter(value, row, index) {
+        var no = value;
+        var result = "";
+        result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"findScore('" + no + "')\" title='查看成绩'><span class='glyphicon glyphicon-search'></span></a>";
+        return result;
+
+    }
+    var finalno='';
+    function findScore(no){
+        $.ajax({
+            url:'/webapi/student/admingetno',
+            data:{
+                no:no
+            }
+        }).done(function (stuno){
+            f1(stuno);
+            finalno=stuno;
+        })
+
+    }
+    function f1(stuno){
+        $('#studentscore').bootstrapTable('destroy');
+        $('#scoreModal').modal('show');
+        $('#studentscore').bootstrapTable({
+            url: '/webapi/student/admingetstudentscore',
+            pagination:false,
+            striped:true,//隔行变色
+            singleSelect:false,//不禁止多选
+            queryParams:function (params){
+                var data = {
+                    stuno:stuno
+                };
+                return data;
+            },
+            columns: [{
+                field: 'coursename',
+                title: '课程名称',
+                align: 'center',
+                width:100
+            },{
+                field: 'scoreusual',
+                title: '平时成绩',
+                align: 'center',
+                width:100,
+            },{
+                field: 'scorefinal',
+                title: '期末笔试成绩',
+                align: 'center',
+                width:100
+
+            },{
+                field: 'scoremakeup',
+                title: '补考成绩',
+                width: 100,
+                align: 'center'
+            },{
+                field: 'credit',
+                title: '课程学分',
+                width: 100,
+                align: 'center'
+            },{
+                field: 'coursename',
+                title: '操作',
+                width: 100,
+                align: 'center',
+                valign: 'middle',
+                formatter:actionFormatter2
+            },]
+        });
+
+    }
+    function actionFormatter2(value) {
+        var coursename = value;
+        var result = "";
+        result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"editScore('" + coursename + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+        result += "<a href='javascript:;' class='btn btn-xs red' onclick=\"deleteScore('" + coursename+ "')\" title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+        return result;
+    }
+    function editScore(coursename){
+        $.ajax({
+            url:'/webapi/student/geteditscore',
+            data:{
+                stuno:finalno,
+                coursename:coursename
+            }
+        }).done(function (rs){
+            $("#id").val(rs.id);
+            $("#courseno").val(rs.courseno);
+            $("#stuno").val(rs.no);
+            $("#scoreusual").val(rs.scoreusual);
+            $("#scorefinal").val(rs.scorefinal);
+            $("#scoremakeup").val(rs.scoremakeup);
+            $('#changescoreModal').modal('show')
+            $('#studentscore').bootstrapTable("destroy");
+            f1(finalno);
+        })
+    }
+    function addScorePreAction(){
+        $("#id1").val(0);
+        $("#stuno1").val(finalno);
+    }
+    //更新成绩
+    function savescore(){
+        var data=$("#formStudent").serialize();
+        $.ajax({
+            url:"/webapi/student/updatescore",
+            method:"put",
+            data:data
+        }).done(function (){
+            $('#studentscore').bootstrapTable("destroy");
+            f1(finalno);
+            $('#changescoreModal').modal('hide')
+        })
+    }
+
+    //新增成绩
+    function insertscore(){
+        var data=$("#addformStudent").serialize();
+        $.ajax({
+            url:"/webapi/student/insertscore",
+            method:"post",
+            data:data
+        }).done(function (){
+            $('#studentscore').bootstrapTable("destroy");
+            f1(finalno);
+            $('#addscoreModal').modal('hide')
+        })
+    }
+
+    function deleteScore(coursename){
+        if (confirm("确定删除？")) {
+            $.ajax({
+                url: '/webapi/student/deletescore',
+                method:"delete",
+                data: {
+                    stuno: finalno,
+                    coursename: coursename
+                }
+            }).done(function (stuno) {
+                $('#studentscore').bootstrapTable("destroy");
+                f1(finalno);
+            })
+        }
+    }
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>专业课程管理</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/plugins/bootstraptable/dist/bootstrap-table.min.css">
+    <style>
+
+    </style>
+</head>
+<body>
+<div style="width: 100%;height: 40px"></div>
+<!--姓名查询功能-->
+<label for="searchName" style="font-size: 23px;display: inline-block">专业名:</label>
+<input type="text" class="form-control" id="searchName" placeholder="专业名"  name="searchName" style="width: 20%;height: 40px;display: inline-block">
+<button type="button" class="btn btn-primary btn-lg" onclick="search();">专业名查询</button>
+
+
+<p></p>
+<!--学号查询功能-->
+<label for="searchNo" style="font-size: 23px;display: inline-block">专业号:</label>
+<input type="text" class="form-control" id="searchNo" placeholder="专业号"  name="searchNo" style="width: 20%;height: 40px;display: inline-block">
+<button type="button" class="btn btn-primary btn-lg" onclick="searchNumber();">专业号查询</button>
+<div id="toolbar" ><button  type="button" class="btn btn-default" data-toggle="modal" data-target="#procModal">新增专业</button></div>
+
+<table class="table table-hover" style="margin:0 auto" id="procTb">
+
+</table>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="procModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">专业信息</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formProc">
+                    <input hidden="hidden" id="id" name="id" />
+                    <div class="form-group">
+                        <label for="no">专业号:</label>
+                        <input type="text" class="form-control" id="no" placeholder="专业号" name="procno">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">专业名:</label>
+                        <input type="text" class="form-control" id="name" placeholder="专业名" name="procname">
+                    </div>
+                </form>
+                <!--表单结束 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="saveproc()">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="courseModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">课程信息</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover" style="margin:0 auto" id="courseTb">
+
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary"  data-toggle="modal" data-target="#addCourseModal">新增课程</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="modal fade" tabindex="-1" role="dialog" id="addCourseModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">专业信息</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formCourse">
+                    <input hidden="hidden" id="id1" name="id" />
+                    <input hidden="hidden" id="procno1" name="procno" />
+                    <div class="form-group">
+                        <label for="no">课程编号:</label>
+                        <input type="text" class="form-control" id="courseno1" placeholder="课程号" name="courseno">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">课程名称:</label>
+                        <input type="text" class="form-control" id="coursename1" placeholder="课程名" name="coursename">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">学分:</label>
+                        <input type="text" class="form-control" id="credit1" placeholder="学分" name="credit">
+                    </div>
+                </form>
+                <!--表单结束 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="addcourse()">保存</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="/js/bootstrap.js"></script>
+<script src="/plugins/bootstraptable/dist/bootstrap-table.min.js"></script>
+<script src="/plugins/bootstraptable/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript">
+    $(function (){
+        loadtable();
+    })
+    var finalprocno='';
+    function loadtable(){
+        $('#procTb').bootstrapTable({
+            url: '/webapi/student/admingetproc',
+            striped:true,//隔行变色
+            pagination:true,//底部显示分页条
+            singleSelect:false,//不禁止多选
+            pageSize:4,//分页每页的数据条
+            pageNumber:1,//首页页码
+            sidePagination: "server",//在服务器端进行分页
+            showColumns:true,
+            showRefresh:true,
+            sortable:true,
+            sortOrder:"asc",
+            toolbar:'#toolbar',
+            queryParams:function (params){
+                var paraObj = {
+                    size: params.limit,
+                    page:params.offset/params.limit,
+                    sort:params.sort,
+                    sortOrder: params.order,
+                    procname:$("#searchName").val(),
+                    procno:$("#searchNo").val()
+                };
+                return paraObj;
+            },
+            columns: [ {
+                field: 'id',
+                title: '序号',
+                align: 'center',
+                width:30
+            }, {
+                field: 'procno',
+                title: '专业号',
+                align: 'center',
+                width:100
+            }, {
+                field: 'procname',
+                title: '专业名称',
+                align: 'center',
+                width:100
+            },{
+                field: 'procno',
+                title: '查看开设课程',
+                width: 100,
+                align: 'center',
+                valign: 'middle',
+                formatter:actionFormatter2
+            },]
+            ,
+            responseHandler:function (res){
+                return{
+                    "total":res.data.totalElements,
+                    "rows":res.data.content
+                };
+            }
+        });
+    }
+    function actionFormatter2(value) {
+        var procno = value;
+        var result = "";
+        result += "<a href='javascript:;' class='btn btn-xs blue' onclick=\"findcourse('" + procno + "')\" title='编辑'><span class='glyphicon glyphicon-search'></span></a>";
+        return result;
+
+    }
+    function findcourse(procno){
+
+        finalprocno=procno;
+        f1(procno);
+    }
+    function f1(procno){
+        $('#courseTb').bootstrapTable('destroy');
+        $('#courseModal').modal('show');
+        $('#courseTb').bootstrapTable({
+            url: '/webapi/student/admingetcourse',
+            pagination:false,
+            striped:true,//隔行变色
+            singleSelect:false,//不禁止多选
+            queryParams:function (params){
+                var data = {
+                    procno:procno
+                };
+                return data;
+            },
+            columns: [{
+                field: 'courseno',
+                title: '课程号',
+                align: 'center',
+                width:100
+            },{
+                field: 'coursename',
+                title: '课程名称',
+                width: 100,
+                align: 'center'
+            },{
+                field: 'credit',
+                title: '课程学分',
+                width: 100,
+                align: 'center'
+            },]
+        });
+    }
+    function search(){
+        $('#procTb').bootstrapTable("destroy");
+        loadtable();
+    }
+    function searchNumber(){
+        $('#procTb').bootstrapTable("destroy");
+        loadtable();
+    }
+    function saveproc(){
+        $("#id").val(0);
+        var data=$("#formProc").serialize();
+        $.ajax({
+            url:"/webapi/student/insertproc",
+            method:"post",
+            data:data
+        }).done(function (rs){
+            if (rs===1){
+                alert("添加专业成功！");
+                $('#procModal').modal('hide')
+                $('#procTb').bootstrapTable("destroy");
+                loadtable();
+
+            }
+            else {
+                alert("请勿重复添加专业号或专业名")
+            }
+
+        })
+    }
+    function addcoursepreaction(){
+        $("#id1").val(0);
+        $("#procno1").val(finalprocno);
+    }
+    function addcourse(){
+        addcoursepreaction();
+        var data=$("#formCourse").serialize();
+        $.ajax({
+            url:"/webapi/student/insertcourse",
+            method:"post",
+            data:data
+        }).done(function (rs){
+            if (rs==1){
+                alert("添加课程成功")
+                $('#courseTb').bootstrapTable("destroy");
+                f1(finalprocno);
+                $('#courseModal').modal('hide')
+            }else {
+                alert("请勿重复添加课程或课号！")
+            }
+
+        })
+    }
+</script>
+</body>
+</html>
